@@ -1,0 +1,50 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsc && node dist/server.js",
+    "watch": "tsc --watch",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DiegoDev-7/Backend-Devices.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/DiegoDev-7/Backend-Devices/issues"
+  },
+  "homepage": "https://github.com/DiegoDev-7/Backend-Devices#readme",
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.3.5",
+    "@types/pg": "^8.18.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/nodemailer": "^7.0.11",
+    "axios": "^1.13.6",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^2.9.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.2",
+    "pg": "^8.20.0",
+    "serverless-http": "^4.0.0"
+  }
+}
