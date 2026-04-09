@@ -22,6 +22,24 @@ export const getBankModel = async (
 
 
 
+// Get number card
+export const getCardNumberByUserId = async (
+  user_id: number
+) => {
+
+  const result = await pool.query(
+    `
+      SELECT card FROM bank
+      WHERE user_id = $1
+    `,
+    [user_id]
+  )
+
+  return result.rows[0]
+}
+
+
+
 // Create bank by user
 export const createBankModel = async (
   user_id: number, 

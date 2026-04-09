@@ -177,7 +177,7 @@ Update password from user with codes.
     POST /users/verify-code
     POST /users/reset-password
 
-**Process** 
+**Process**
     1. Create code
     2. Verify code
     3. Change password
@@ -246,56 +246,47 @@ account 4. Delete user
 
 ------------------------------------------------------------------------
 
-# ATM Wallet
+## Bank create
 
-Used to move money between bank and users.
+Get bank amount
 
-Supported operations:
-
--   Bank → ATM
--   ATM → Bank
--   ATM → User (phone transfer)
-
-------------------------------------------------------------------------
-
-## Bank → ATM
-
-    POST /atm/bank-to-atm
-
-**Body**
-
+    GET /bank/amount
+    
 ``` json
 {
-  "amount": 200
+  "message": "Bank data obtained",
+  "bank"
 }
 ```
 
 ------------------------------------------------------------------------
 
-## ATM → Bank
+## Bank create
 
-    POST /atm/atm-to-bank
+Create bank account
 
-**Body**
+    POST /bank/create/bank
 
 ``` json
 {
-  "amount": 100
+  "message": "Bank account created",
+  "bank"
 }
 ```
 
 ------------------------------------------------------------------------
 
-## ATM → User (Phone Transfer)
+## Bank Login
 
-    POST /atm/send-user
+Login bank with the last 4 digits in the card
+
+    POST /bank/verify-card-code
 
 **Body**
 
 ``` json
 {
-  "phone": "3001234567",
-  "amount": 50
+  "last4": 4545
 }
 ```
 
@@ -316,9 +307,9 @@ Supported operations:
 
 Types:
 
-    atm_transfer
-    bank_to_atm
-    atm_to_bank
+    bank
+    atm
+    user
 
 ------------------------------------------------------------------------
 
@@ -352,6 +343,61 @@ Example:
     "type": "atm_transfer"
   }
 ]
+```
+
+------------------------------------------------------------------------
+
+# ATM Wallet
+
+Used to move money between bank and users.
+
+Supported operations:
+
+-   Bank → ATM
+-   ATM → Bank
+-   ATM → User (phone transfer)
+
+------------------------------------------------------------------------
+
+## Bank → ATM
+
+    POST /atm/transaction/bank
+
+**Body**
+
+``` json
+{
+  "amount": 200
+}
+```
+
+------------------------------------------------------------------------
+
+## ATM → Bank
+
+    POST /atm/transaction/atm
+
+**Body**
+
+``` json
+{
+  "amount": 100
+}
+```
+
+------------------------------------------------------------------------
+
+## ATM → User (Phone Transfer)
+
+    POST /atm/transaction/user
+
+**Body**
+
+``` json
+{
+  "phone": "3001234567",
+  "amount": 50
+}
 ```
 
 ------------------------------------------------------------------------
@@ -435,6 +481,19 @@ If the user tries too early:
 Database field used:
 
     users.last_reward
+
+------------------------------------------------------------------------
+
+# Support
+
+    POST /support
+
+``` json
+{
+  "message": "Message sent successfully",
+  "emailSent"
+}
+```
 
 ------------------------------------------------------------------------
 

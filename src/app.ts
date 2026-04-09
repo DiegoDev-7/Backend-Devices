@@ -6,7 +6,8 @@ import userRoutes from "./routes/user.routes.js"
 import authRoutes from "./routes/auth.routes.js"
 import bankRoutes from "./routes/bank.routes.js"
 import atmRoutes from "./routes/atm.routes.js"
-import transactionRoutes from "./routes/transactionRoutes.js"
+import transactionRoutes from "./routes/transaction.routes.js"
+import supportEmail from "./routes/support.routes.js"
 import gameRoutes from "./routes/game.routes.js"
 import radioRoutes from "./routes/radio.routes.js"
 
@@ -49,6 +50,10 @@ app.use("/api/atm", atmRoutes)
 
 // Transaction
 app.use("/api/transaction", transactionRoutes)
+
+
+// Support
+app.use("/api/support", supportEmail)
 
 
 // Game

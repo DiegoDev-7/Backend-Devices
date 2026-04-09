@@ -25,9 +25,7 @@ export const sendEmailUtils = async (to: string, subject: string, htmlContent: s
     })
     
   } catch (error: any) {
-    
-    console.error("Error enviado correo a", to, ":", error.message)
-    
+        
     throw new Error("Error sending the message")
 
   }

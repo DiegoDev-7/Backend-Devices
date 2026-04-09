@@ -1,5 +1,5 @@
 /* Model */
-import { createBankModel, getBankModel } from "../model/bank.model.js"
+import { createBankModel, getBankModel, getCardNumberByUserId } from "../model/bank.model.js"
 
 
 
@@ -11,9 +11,46 @@ export const getBankByUserService = async (
     
     const bank = await getBankModel(user_id)
 
-    if (!bank) return null
+    if (!bank) {
+      throw new Error("Bank not created")
+    }
 
     return bank
+    
+  } catch (error: any) {
+    
+    if (error.code !== "23505") {
+      throw error
+    }
+
+  }
+}
+
+
+
+// Check the numeric card code, last 4 digits
+export const verifyLast4DigitsService = async (
+  user_id: number,
+  last4: string
+) => {
+  try {
+
+    const user = await getCardNumberByUserId(user_id)
+  
+    if (!user) {
+      throw new Error("User not found")
+    }
+
+    const cardNumber: string = user.card
+
+
+    const realLast4 = cardNumber.slice(-4)
+
+    if (last4 !== realLast4) {
+      throw new Error("Invalid code")
+    }
+
+    return true
     
   } catch (error: any) {
     

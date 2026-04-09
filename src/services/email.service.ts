@@ -1,5 +1,7 @@
 /* Utils */
 import { sendEmailUtils } from "../utils/email.utils.js"
+
+/* Templates */
 import { htmlTemplateWelcomeNexia, htmlTemplateDeleteNexia } from "../utils/email.templates.js"
 
 

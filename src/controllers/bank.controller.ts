@@ -1,5 +1,5 @@
 /* Services */
-import { createBankService, getBankByUserService } from "../services/bank.service.js"
+import { createBankService, getBankByUserService, verifyLast4DigitsService } from "../services/bank.service.js"
 
 
 
@@ -22,6 +22,44 @@ export const getBankByUserController = async (req: any, res: any) => {
       error: "Error retrieving bank account data"
     })
 
+  }
+}
+
+
+
+// Check last 4 digits card code
+export const verifyLast4DigitsController = async (req: any, res: any) => {
+  try {
+
+    const user_id = Number(req.user.user_id)
+    
+    const { last4 } = req.body
+
+    if (!last4 || last4.length !== 4) {
+      return res.status(400).json({
+        message: "You must send exactly 4 digits"
+      })
+    }
+
+    await verifyLast4DigitsService(user_id, last4)
+
+    return res.json({
+      success: true,
+      message: "Correct code"
+    })
+    
+  } catch (error: any) {
+
+    if (error.message === "User not found") {
+      return res.status(404).json({ error: "User not found" })
+    }
+
+    if (error.message === "Invalid code") {
+      return res.status(401).json({ error: "Wrong code" })
+    }
+
+    return res.status(500).json({ error: "Server error" })
+    
   }
 }
 
