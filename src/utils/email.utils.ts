@@ -25,7 +25,7 @@ export const sendEmailUtils = async (to: string, subject: string, htmlContent: s
     })
     
   } catch (error: any) {
-        
+    
     throw new Error("Error sending the message")
 
   }

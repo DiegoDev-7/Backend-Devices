@@ -17,6 +17,10 @@ export const getAtmByUserController = async (req: any, res: any) => {
     })
 
   } catch (error: any) {
+
+    if (error.message === "Atm not created") {
+      return res.status(404).json({ error: "Atm not created" })
+    }
     
     res.status(500).json({
       error: "Error retrieving bank account data"

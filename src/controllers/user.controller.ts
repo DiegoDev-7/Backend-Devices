@@ -192,6 +192,10 @@ export const requestPasswordResetController = async (req: any, res: any) => {
     
     const code = await createResetCodeService(email)
 
+    if (!code) return res.status(404).json({
+      message: "Can't send email"
+    })
+
     await sendEmailUtils(email, "Recovery code", htmlTemplateRecoveryPassword(user.name, code))
 
     res.status(200).json({

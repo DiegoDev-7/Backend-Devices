@@ -199,7 +199,7 @@ export const atmToUserService = async (
       user_id,
       receiverId,
       amount,
-      "atm_transfer"
+      "atm_to_user"
     )
 
     await client.query("COMMIT")

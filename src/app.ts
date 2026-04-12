@@ -9,11 +9,14 @@ import atmRoutes from "./routes/atm.routes.js"
 import transactionRoutes from "./routes/transaction.routes.js"
 import supportEmail from "./routes/support.routes.js"
 import gameRoutes from "./routes/game.routes.js"
+import leaderboardRoutes from "./routes/leaderboard.routes.js"
+import contactRoutes from "./routes/contacts.routes.js"
 import radioRoutes from "./routes/radio.routes.js"
 
 
 
 const app = express()
+
 
 app.use(cors({
   origin: [
@@ -52,12 +55,20 @@ app.use("/api/atm", atmRoutes)
 app.use("/api/transaction", transactionRoutes)
 
 
+// Contact
+app.use("/api/contact", contactRoutes)
+
+
 // Support
 app.use("/api/support", supportEmail)
 
 
 // Game
 app.use("/api/game", gameRoutes)
+
+
+// Leaderboard
+app.use("/api/leaderboard", leaderboardRoutes)
 
 
 // Radio

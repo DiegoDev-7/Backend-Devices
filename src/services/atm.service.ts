@@ -11,7 +11,9 @@ export const getAtmByUserService = async (
     
     const atm = await getAtmModel(user_id)
 
-    if (!atm) return null
+    if (!atm) {
+      throw new Error("Atm not created")
+    }
 
     return atm
 

@@ -14,7 +14,7 @@ const router = Router()
 // /api/atm
 
 // GET
-router.get("/amount", verifyToken, getAtmByUserController)
+router.get("/", verifyToken, getAtmByUserController)
 
 
 // POST

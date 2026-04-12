@@ -250,7 +250,7 @@ account 4. Delete user
 
 Get bank amount
 
-    GET /bank/amount
+    GET /bank
     
 ``` json
 {
@@ -540,6 +540,294 @@ Radio from Japan:
 
 ------------------------------------------------------------------------
 
+# Leaderboard System
+
+Provides ranked views of users based on different metrics.
+
+## Supported metrics:
+
+    - bank_balance
+
+    - atm_balance
+
+    - total_balance
+
+    - total_transactions
+
+    - total_contacts
+
+All rankings are paginated in chunks of 50.
+
+
+### Get Leaderboard
+
+    Returns ranked users ordered by a selected metric.
+
+### Endpoint
+
+    GET /api/leaderboard
+
+### Query Params
+
+    ?metric=total_transactions
+    
+    order=DESC
+    
+    page=0
+
+### Response
+
+``` json
+{
+    "user_id": 1,
+    "name": "Diego",
+    "lastname": "Rojas",
+    "bank_balance": 10000,
+    "atm_balance": 5000,
+    "total_balance": 15000,
+    "total_transactions": 320,
+    "total_contacts": 45
+}
+```
+
+
+## Get My Rank
+
+    Returns the authenticated user’s position in a given metric.
+
+### Endpoint
+
+    GET /leaderboard/me/rank
+
+### Query Params
+
+    metric=total_transactions
+    order=DESC
+
+### Headers
+
+    Authorization: Bearer TOKEN
+
+### Response
+
+
+``` json
+{
+  "rank": 342
+}
+```
+
+## Get My Leaderboard Context
+
+    Returns users around the authenticated user in the ranking.
+
+### Endpoint
+
+    GET /leaderboard/me/context
+
+### Query Params
+
+    metric=total_transactions
+
+### Headers
+
+    Authorization: Bearer TOKEN
+
+### Response
+
+
+``` json
+{
+  "rank": 342,
+  "data": [
+    {
+      "user_id": 10,
+      "name": "User A",
+      "total_transactions": 120
+    },
+    {
+      "user_id": 15,
+      "name": "YOU",
+      "total_transactions": 88
+    },
+    {
+      "user_id": 18,
+      "name": "User B",
+      "total_transactions": 80
+    }
+  ]
+}
+```
+
+
+------------------------------------------------------------------------
+
+# Contacts
+
+    Contacts System
+
+Users can manage a personal contacts list linked to existing system users.
+
+A contact can only be created if the phone number exists in the users table.
+
+Each contact requires a custom display name (name_contact).
+
+
+## List Contacts Endpoint
+
+Returns all contacts of the authenticated user, with optional search by name or phone.
+
+    GET /api/contact
+
+### Query Params (optional)
+
+    /api/contact?search=string
+
+### Headers
+
+    Authorization: Bearer TOKEN
+
+
+``` json
+{
+    "contact_id": 1,
+    "phone": "3123456789",
+    "name_contact": "Juan Oficina",
+    "created_at": "2026-04-11T10:00:00Z"
+}
+```
+
+
+## Create Contact
+
+Adds a new contact linked to an existing user by phone.
+
+### Endpoint
+
+    POST /contact
+
+### Headers
+
+    Authorization: Bearer TOKEN
+
+``` json
+{
+  "phone": "3123456789",
+  "name_contact": "Juan Oficina"
+}
+```
+
+### Rules
+
+- name_contact is required
+
+- phone must exist in users.phone
+
+- duplicates per user are not allowed
+
+``` json
+{
+  "contact_id": 1,
+  "phone": "3123456789",
+  "name_contact": "Juan Oficina",
+  "created_at": "2026-04-11T10:00:00Z"
+}
+```
+
+Error (user does not exist)
+
+``` json
+{
+  "message": "User does not exist"
+}
+```
+
+Error (missing name)
+
+``` json
+{
+  "message": "Contact name is required"
+}
+```
+
+
+## Update Contact Name
+
+Updates only the custom contact name.
+
+### Endpoint
+
+    PATCH /api/contact
+
+### Headers
+
+    Authorization: Bearer TOKEN
+
+``` json
+{
+  "name_contact": "Nuevo Nombre"
+}
+```
+
+### Response
+
+``` json
+{
+  "success": true
+}
+```
+
+### Rules
+
+Only name_contact can be updated
+Contact must belong to authenticated user
+
+
+#Delete Contact
+
+Removes a contact from the user’s list.
+
+### Endpoint
+
+    DELETE /contact/:contact_id
+
+### Headers
+
+    Authorization: Bearer TOKEN
+
+### Response
+
+``` json
+{
+  "success": true
+}
+```
+
+
+# Search Contacts
+
+Alternative explicit search endpoint.
+
+### Endpoint
+
+    GET /contact/search?q=string
+
+### Headers
+
+    Authorization: Bearer TOKEN
+
+### Response
+
+``` json
+{
+    "contact_id": 1,
+    "phone": "3123456789",
+    "name_contact": "Juan Oficina"
+}
+```
+
+------------------------------------------------------------------------
+
 # Project Structure
 
     src
@@ -550,6 +838,7 @@ Radio from Japan:
      ├ model
      ├ routes
      ├ services
+     ├ types
      ├ utils
      ├ app.ts
      └ server.ts
@@ -567,6 +856,8 @@ The API includes:
 -   Account Deletion
 -   Bank & ATM System
 -   Phone Transfers
+-   Contact system
+-   Leaderboard system
 -   Transaction History
 -   Click Game Rewards
 -   Timed Rewards

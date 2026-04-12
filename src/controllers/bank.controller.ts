@@ -7,7 +7,19 @@ import { createBankService, getBankByUserService, verifyLast4DigitsService } fro
 export const getBankByUserController = async (req: any, res: any) => {
   try {
 
-    const user_id = Number(req.user.user_id)
+    if (!req.user || !req.user.user_id) {
+      return res.status(401).json({
+        error: "Unauthorized"
+      })
+    }
+
+    const user_id = req.user.user_id
+
+    if (isNaN(user_id)) {
+      return res.status(400).json({
+        error: "Invalid user id"
+      })
+    }
     
     const bank = await getBankByUserService(user_id)
 
@@ -17,6 +29,10 @@ export const getBankByUserController = async (req: any, res: any) => {
     })
 
   } catch (error: any) {
+
+    if (error.message === "Bank not created") {
+      return res.status(404).json({ error: "Bank not created" })
+    }
     
     res.status(500).json({
       error: "Error retrieving bank account data"

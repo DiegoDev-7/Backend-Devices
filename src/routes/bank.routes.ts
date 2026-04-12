@@ -14,7 +14,7 @@ const router = Router()
 // /api/bank
 
 // GET
-router.get("/amount", verifyToken, getBankByUserController)
+router.get("/", verifyToken, getBankByUserController)
 
 
 // POST
