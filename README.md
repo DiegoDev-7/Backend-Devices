@@ -1,151 +1,246 @@
-# Fintech / Game API Documentation
+# Fintech / NEXIA API Backend
 
-## Base Concepts
+A modern backend API combining fintech capabilities with gamification features. Users can manage finances, perform transfers, and earn rewards through interactive gameplay.
 
-Conceptual Diagram
+## Table of Contents
 
-    Client
-      |
-      v
-    app.ts (middlewares globales)
-      |
-      +--> /api/users ------> userRoutes ------> verifyToken? ----> userController ----> userService ----> userModel ----> database
-      |
-      +--> /api/auth ------- > authRoutes ------> authController ----> authService ----> authModel ----> database
-      |
-      +--> /api/bank ------- > bankRoutes ------> bankController ----> bankService ----> bankModel ----> database
-      |
-      +--> /api/transaction -> transactionRoutes -> transactionController -> transactionService -> transactionModel -> database
-      |
-      +--> /api/game ------- > gameRoutes ------> gameController ----> gameService ----> gameModel ----> database
-      |
-      +--> /api/radio ------ > radioRoutes ------> radioController ----> radioService ----> radio data (data/radio/*.ts)
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Project Structure](#project-structure)
+- [Authentication](#authentication)
+- [API Endpoints](#api-endpoints)
+- [Database Models](#database-models)
+- [Configuration](#configuration)
+- [Getting Started](#getting-started)
 
-Architecture used across the project:
+---
 
-    Routes → Controller → Service → Model → Database
+## Overview
 
-Authentication is handled with **JWT** using the header:
+This API provides a complete fintech and gamification platform with the following capabilities:
 
-    Authorization: Bearer TOKEN
+- JWT-based authentication with Google OAuth support
+- Banking system with accounts and transactions
+- ATM wallet for money transfers
+- Gamification with click-based rewards and timed rewards
+- Contact management system
+- Global leaderboard with multiple metrics
+- Avatar upload with Cloudinary storage
+- Support ticket system
+- Radio station API
 
-------------------------------------------------------------------------
+---
 
-# Authentication
+## Architecture
 
-## Google Login
+### Request Flow
 
-Creates the user if it does not exist and returns a JWT.
+```
+Client
+  |
+  v
+app.ts (Global Middlewares)
+  - JWT Authentication
+  - File Upload (Multer)
+  |
+  ├─ /api/auth        ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/users       ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/bank        ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/atm         ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/transaction ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/game        ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/reward      ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/leaderboard ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/contact     ──> Routes ──> Controller ──> Service ──> Model ──> Database
+  ├─ /api/radio       ──> Routes ──> Controller ──> Service (Static Data)
+  └─ /api/support     ──> Routes ──> Controller ──> Service (Email)
+```
 
+### Architectural Pattern
 
-**Endpoint**
+```
+Routes → Controller → Service → Model → Database
+```
 
-    POST /auth/google/register
+### Technology Stack
 
-**Body**
+| Layer | Technology |
+|-------|-----------|
+| Language | TypeScript |
+| Runtime | Node.js + Express |
+| Database | SQL (PostgreSQL) |
+| Authentication | JWT (JSON Web Tokens) |
+| File Storage | Cloudinary |
+| Email Service | SMTP / NodeMailer |
 
-``` json
+---
+
+## Project Structure
+
+```
+Backend-Devices/
+│
+├── src/
+│   ├── app.ts                    # Express application setup
+│   ├── server.ts                 # Server entry point
+│   │
+│   ├── config/                   # Global configuration
+│   │   ├── database.ts           # Database connection
+│   │   └── cloudinary.ts         # Cloudinary configuration
+│   │
+│   ├── routes/                   # API route definitions
+│   │   ├── auth.routes.ts
+│   │   ├── user.routes.ts
+│   │   ├── bank.routes.ts
+│   │   ├── transaction.routes.ts
+│   │   ├── atm.routes.ts
+│   │   ├── game.routes.ts
+│   │   ├── leaderboard.routes.ts
+│   │   ├── contact.routes.ts
+│   │   ├── radio.routes.ts
+│   │   └── support.routes.ts
+│   │
+│   ├── controllers/              # Request handling logic
+│   │   ├── auth.controller.ts
+│   │   ├── user.controller.ts
+│   │   ├── bank.controller.ts
+│   │   ├── transaction.controller.ts
+│   │   ├── atm.controller.ts
+│   │   ├── game.controller.ts
+│   │   ├── leaderboard.controller.ts
+│   │   ├── contact.controller.ts
+│   │   ├── radio.controller.ts
+│   │   └── support.controller.ts
+│   │
+│   ├── services/                 # Business logic
+│   │   ├── auth.service.ts
+│   │   ├── user.service.ts
+│   │   ├── bank.service.ts
+│   │   ├── transaction.service.ts
+│   │   ├── atm.service.ts
+│   │   ├── game.service.ts
+│   │   ├── leaderboard.service.ts
+│   │   ├── contact.service.ts
+│   │   ├── email.service.ts
+│   │   ├── radio.service.ts
+│   │   └── support.service.ts
+│   │
+│   ├── model/                    # Database models (queries)
+│   │   ├── auth.model.ts
+│   │   ├── user.model.ts
+│   │   ├── bank.model.ts
+│   │   ├── transaction.model.ts
+│   │   ├── atm.model.ts
+│   │   ├── game.model.ts
+│   │   ├── leaderboard.model.ts
+│   │   └── contact.model.ts
+│   │
+│   ├── middlewares/              # Custom middlewares
+│   │   ├── auth.middleware.ts    # JWT verification
+│   │   └── upload.middleware.ts  # File upload handling
+│   │
+│   ├── types/                    # TypeScript interfaces
+│   │   └── auth.request.ts
+│   │
+│   ├── data/                     # Static data
+│   │   └── radio/
+│   │       ├── radio.colombia.ts
+│   │       ├── radio.eeuu.ts
+│   │       └── radio.japan.ts
+│   │
+│   └── utils/                    # Helper functions
+│       ├── email.templates.ts
+│       ├── email.utils.ts
+│       └── upload.utils.ts
+│
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+### Directory Description
+
+| Directory | Purpose |
+|-----------|---------|
+| routes | Defines endpoints and maps requests to controllers |
+| controllers | Handles HTTP requests and response formatting |
+| services | Contains complex business logic |
+| model | Database access layer with SQL queries |
+| middlewares | Processes requests before reaching controllers |
+| types | TypeScript interfaces and type definitions |
+| config | Global configurations and connections |
+| utils | Reusable helper functions |
+| data | Static data and seeds |
+
+---
+
+## Authentication
+
+### JWT Mechanism
+
+All protected endpoints require a JWT token in the Authorization header:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### Google OAuth
+
+Automatic user creation on first login:
+
+**Register/Login with Google**
+
+```http
+POST /api/auth/google/register
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
 {
   "name": "Juan",
   "lastName": "Gabriel",
   "email": "juan@gmail.com",
   "provider_id": "google_user_id",
-  "avatar": "google_avatar"
+  "avatar": "https://..."
 }
 ```
 
-**Response**
-
-``` json
+**Response:**
+```json
 {
   "user": {
-    "user_id": ?,
-    "email": "juan@gmail.com",
-  },
-  "token": "JWT_TOKEN"
-}
-```
-
-
-**Endpoint**
-
-    POST /auth/google/login
-
-**Body**
-
-``` json
-{
-  "name": "Juan",
-  "email": "juan@gmail.com",
-  "provider_id": "google_user_id"
-}
-```
-
-**Response**
-
-``` json
-{
-  "user": {
-    "user_id": ?,
+    "user_id": 1,
     "email": "juan@gmail.com",
     "provider": "google"
   },
-  "token": "JWT_TOKEN"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 }
 ```
 
-------------------------------------------------------------------------
+---
 
-# User Management
+## API Endpoints
 
-## Upload Avatar (Cloudinary)
+### User Management (/api/users)
 
-Uploads an image and saves the URL in the database.
+#### Get User Profile
 
-**Endpoint**
-
-    POST /users/avatar
-
-**Headers**
-
-    Authorization: Bearer TOKEN
-    Content-Type: multipart/form-data
-
-**Body**
-
-    avatar: image file
-
-**Response**
-
-``` json
-{
-  "avatar": "https://res.cloudinary.com/.../avatars/image.png"
-}
+```http
+GET /api/users
+Authorization: Bearer TOKEN
 ```
 
-### Notes
+#### Update User Profile
 
-If the user already has an avatar: 1. The previous image is removed from
-Cloudinary. 2. The new one is uploaded. 3. The database is updated.
+```http
+PUT /api/users/update
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
 
-------------------------------------------------------------------------
-
-## Update User
-
-Allows updating:
-
--   name
--   lastName
--   password
--   avatar
-
-**Endpoint**
-
-    PUT /users/update
-
-**Body**
-
-``` json
+**Request Body:**
+```json
 {
   "name": "Juan",
   "lastName": "Perez",
@@ -154,9 +249,8 @@ Allows updating:
 }
 ```
 
-**Response**
-
-``` json
+**Response:**
+```json
 {
   "user_id": 5,
   "name": "Juan",
@@ -165,288 +259,324 @@ Allows updating:
 }
 ```
 
-------------------------------------------------------------------------
+#### Upload Avatar (Cloudinary)
 
-## Update password
+```http
+POST /api/users/avatar
+Authorization: Bearer TOKEN
+Content-Type: multipart/form-data
+```
 
-Update password from user with codes.
+**Form Data:** `avatar: <image_file>`
 
-**Endpoints**
+**Response:**
+```json
+{
+  "avatar": "https://res.cloudinary.com/.../avatars/avatar123.png"
+}
+```
 
-    POST /users/request-reset
-    POST /users/verify-code
-    POST /users/reset-password
+**Note:** If the user already has an avatar, the previous image is deleted from Cloudinary, the new one is uploaded, and the database is updated.
 
-**Process**
-    1. Create code
-    2. Verify code
-    3. Change password
+#### Request Password Reset
 
-**Responses**
+**Step 1: Request Reset Code**
 
-    Status code 200
+```http
+POST /api/users/request-reset
+Content-Type: application/json
+```
 
-    1. Create code:
-``` json
+**Request Body:**
+```json
+{
+  "email": "user@example.com"
+}
+```
+
+**Response:**
+```json
 {
   "message": "Code sent to email"
 }
 ```
-    2. Verify code:
-``` json
+
+**Step 2: Verify Reset Code**
+
+```http
+POST /api/users/verify-code
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "code": "123456"
+}
+```
+
+**Response:**
+```json
 {
   "message": "Valid code"
 }
 ```
-    3. Change password:
-``` json
+
+**Step 3: Reset Password**
+
+```http
+POST /api/users/reset-password
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "code": "123456",
+  "newPassword": "newPassword123"
+}
+```
+
+**Response:**
+```json
 {
   "message": "Password updated successfully"
 }
 ```
 
-------------------------------------------------------------------------
+#### Delete Account
 
-## Delete Account
+```http
+DELETE /api/users/delete-account
+Authorization: Bearer TOKEN
+```
 
-Deletes the user and related records.
+**Process:**
+1. Delete all transactions
+2. Delete ATM wallet
+3. Delete bank account
+4. Delete user record
 
-**Endpoint**
-
-    DELETE /users/delete-account
-
-**Headers**
-
-    Authorization: Bearer TOKEN
-
-**Process** 1. Delete transactions 2. Delete ATM wallet 3. Delete bank
-account 4. Delete user
-
-**Response**
-
-``` json
+**Response:**
+```json
 {
   "message": "Account deleted successfully"
 }
 ```
 
-------------------------------------------------------------------------
+---
 
-# Bank System
+### Banking System (/api/bank)
 
-## Bank Table
+#### Get Bank Account
 
-    bank
-    -------
-    bank_id
-    user_id
-    card
-    balance
-    created_at
+```http
+GET /api/bank
+Authorization: Bearer TOKEN
+```
 
-------------------------------------------------------------------------
-
-## Bank create
-
-Get bank amount
-
-    GET /bank
-    
-``` json
+**Response:**
+```json
 {
   "message": "Bank data obtained",
-  "bank"
+  "bank": {
+    "bank_id": 1,
+    "user_id": 5,
+    "card": "****5678",
+    "balance": 15000,
+    "created_at": "2026-01-01T10:00:00Z"
+  }
 }
 ```
 
-------------------------------------------------------------------------
+#### Create Bank Account
 
-## Bank create
+```http
+POST /api/bank/create/bank
+Authorization: Bearer TOKEN
+```
 
-Create bank account
-
-    POST /bank/create/bank
-
-``` json
+**Response:**
+```json
 {
   "message": "Bank account created",
-  "bank"
-}
-```
-
-------------------------------------------------------------------------
-
-## Bank Login
-
-Login bank with the last 4 digits in the card
-
-    POST /bank/verify-card-code
-
-**Body**
-
-``` json
-{
-  "last4": 4545
-}
-```
-
-------------------------------------------------------------------------
-
-# Transactions
-
-## Transactions Table
-
-    transactions
-    -------------
-    transaction_id
-    user_id
-    receiver_user_id
-    amount
-    type
-    created_at
-
-Types:
-
-    bank
-    atm
-    user
-
-------------------------------------------------------------------------
-
-## Transaction History
-
-Returns all transactions for the user.
-
-**Endpoint**
-
-    GET /transactions/history
-
-Optional query parameters:
-
-    ?page=1
-    &limit=10
-    &type=atm_transfer
-
-Example:
-
-    GET /transactions/history?page=1&limit=10
-
-**Response**
-
-``` json
-[
-  {
-    "transaction_id": 30,
+  "bank": {
+    "bank_id": 1,
     "user_id": 5,
-    "receiver_user_id": 8,
-    "amount": 50,
-    "type": "atm_transfer"
+    "card": "****5678",
+    "balance": 0
   }
-]
+}
 ```
 
-------------------------------------------------------------------------
+#### Verify Card
 
-# ATM Wallet
+Verify bank card using last 4 digits.
 
-Used to move money between bank and users.
+```http
+POST /api/bank/verify-card-code
+Content-Type: application/json
+```
 
-Supported operations:
+**Request Body:**
+```json
+{
+  "last4": 5678
+}
+```
 
--   Bank → ATM
--   ATM → Bank
--   ATM → User (phone transfer)
+---
 
-------------------------------------------------------------------------
+### ATM Wallet (/api/atm)
 
-## Bank → ATM
+The ATM wallet enables money transfers between bank account, ATM wallet, and other users.
 
-    POST /atm/transaction/bank
+#### Transfer: Bank to ATM
 
-**Body**
+```http
+POST /api/atm/transaction/bank
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
 
-``` json
+**Request Body:**
+```json
 {
   "amount": 200
 }
 ```
 
-------------------------------------------------------------------------
+#### Transfer: ATM to Bank
 
-## ATM → Bank
+```http
+POST /api/atm/transaction/atm
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
 
-    POST /atm/transaction/atm
-
-**Body**
-
-``` json
+**Request Body:**
+```json
 {
   "amount": 100
 }
 ```
 
-------------------------------------------------------------------------
+#### Transfer: ATM to User (Phone Transfer)
 
-## ATM → User (Phone Transfer)
+```http
+POST /api/atm/transaction/user
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
 
-    POST /atm/transaction/user
-
-**Body**
-
-``` json
+**Request Body:**
+```json
 {
   "phone": "3001234567",
   "amount": 50
 }
 ```
 
-------------------------------------------------------------------------
+---
 
-# Game System
+### Gamification System
 
-Users earn money by clicking.
+#### Click Reward
 
-The frontend accumulates clicks and sends them in batches.
+Users earn money by accumulating clicks. Frontend batches clicks and sends them.
 
-## Click Reward
+```http
+POST /api/game/click
+Authorization: Bearer TOKEN
+Content-Type: application/json
+```
 
-Adds random money to the bank balance.
-
-Reward per click:
-
-    1 - 100
-
-**Endpoint**
-
-    POST /game/click
-
-**Body**
-
-``` json
+**Request Body:**
+```json
 {
   "clicks": 25
 }
 ```
 
-**Response**
-
-``` json
+**Response:**
+```json
 {
   "reward": 1248
 }
 ```
 
-Money is added directly to:
+**Details:**
+- Reward per click: 1 - 100
+- Maximum clicks per request: 100
+- Money is added directly to bank balance
 
-    bank.balance
+#### Timed Reward (10-minute interval)
 
-Security rule:
+Users can claim a reward every 10 minutes.
 
-    max clicks per request = 100
+```http
+POST /api/reward/claim
+Authorization: Bearer TOKEN
+```
 
-------------------------------------------------------------------------
+**Response (Success):**
+```json
+{
+  "reward": 3487
+}
+```
 
-# Timed Reward (10 Minutes)
+**Response (Not Ready):**
+```json
+{
+  "message": "Wait 420 seconds to claim reward"
+}
+```
+
+**Details:**
+- Reward range: 1000 - 5000
+- Database field: `users.last_reward`
+
+---
+
+### Transactions (/api/transaction)
+
+#### Get Transaction History
+
+```http
+GET /api/transaction/history?page=1&limit=10&type=atm_transfer
+Authorization: Bearer TOKEN
+```
+
+**Query Parameters (Optional):**
+- `page` - Page number (default: 1)
+- `limit` - Records per page (default: 10)
+- `type` - Filter by type: `bank`, `atm`, `user`
+
+**Response:**
+```json
+[
+  {
+    "transaction_id": 30,
+    "user_id": 5,
+    "receiver_user_id": 8,
+    "amount": 50,
+    "type": "atm_transfer",
+    "created_at": "2026-01-15T10:30:00Z"
+  }
+]
+```
+
+**Transaction Types:**
+- `bank` - Bank transfer
+- `atm` - ATM transfer
+- `user` - User-to-user transfer
+
+---
+
+### Leaderboard (/api/leaderboard)
 
 Users can claim a reward every **10 minutes**.
 
@@ -842,6 +972,70 @@ Alternative explicit search endpoint.
      ├ utils
      ├ app.ts
      └ server.ts
+
+------------------------------------------------------------------------
+
+# Getting Started
+
+## Prerequisites
+
+- Node.js 14 or later
+- npm or yarn
+- PostgreSQL or MySQL database
+- Cloudinary account
+- Google OAuth credentials (if using Google Login)
+
+## Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd Backend-Devices
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create or update your environment variables.
+
+4. Start the development server:
+
+```bash
+npm run dev
+```
+
+5. Start the production server:
+
+```bash
+npm start
+```
+
+## Environment Variables
+
+Create a `.env` file in the project root and configure the following values:
+
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=your_db_user
+DB_PASSWORD=your_db_password
+DB_NAME=your_db_name
+JWT_SECRET=your_jwt_secret
+CLOUDINARY_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=your_smtp_user
+SMTP_PASSWORD=your_smtp_password
+PORT=5000
+```
 
 ------------------------------------------------------------------------
 
